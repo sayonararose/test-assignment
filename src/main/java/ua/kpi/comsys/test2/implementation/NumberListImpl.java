@@ -103,7 +103,8 @@ public class NumberListImpl implements NumberList {
             try {
                 parseDecimalString(value.trim());
             } catch (IllegalArgumentException e) {
-                // Якщо рядок містить некоректні символи, залишаємо список порожнім
+                // Якщо рядок містить некоректні символи, очищаємо список
+                clear();
             }
         }
     }
