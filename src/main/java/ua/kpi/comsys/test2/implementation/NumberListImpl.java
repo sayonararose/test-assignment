@@ -84,9 +84,7 @@ public class NumberListImpl implements NumberList {
                 parseDecimalString(line.trim());
             }
         } catch (IOException e) {
-            // Якщо файл не існує або є помилка читання, залишаємо список порожнім
         } catch (IllegalArgumentException e) {
-            // Якщо дані у файлі некоректні, залишаємо список порожнім
         }
     }
 
@@ -135,7 +133,7 @@ public class NumberListImpl implements NumberList {
      * Saves the number, stored in the list, into specified file
      * in <b>decimal</b> scale of notation.
      *
-     * @param file - file where number has to be stored.
+     * @param file 
      */
     public void saveList(File file) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
@@ -149,10 +147,10 @@ public class NumberListImpl implements NumberList {
     /**
      * Returns student's record book number, which has 4 decimal digits.
      *
-     * @return student's record book number.
+     * @return 
      */
     public static int getRecordBookNumber() {
-        return 4118; // Номер залікової книжки 18 у форматі 
+        return 4118; // Номер варіанту з 18 у форматі 
     }
 
 
@@ -201,12 +199,12 @@ public class NumberListImpl implements NumberList {
      *
      * Does not impact the original list.
      *
-     * @param arg - second argument of additional operation
+     * @param arg 
      *
-     * @return result of additional operation.
+     * @return 
      */
     public NumberListImpl additionalOperation(NumberList arg) {
-        // Операція: множення двох чисел (this * arg)
+        // Операція множення двох чисел
         if (arg == null || arg.isEmpty()) {
             throw new IllegalArgumentException("Аргумент не може бути порожнім");
         }
@@ -492,49 +490,51 @@ public class NumberListImpl implements NumberList {
 
     @Override
     public boolean containsAll(Collection<?> c) {
+        // Перевіряємо, чи всі елементи колекції c є в цьому списку
         for (Object o : c) {
             if (!contains(o)) {
-                return false;
+                return false; // Якщо хоча б одного немає — false
             }
         }
-        return true;
+        return true; // Всі елементи знайдені
     }
-
 
     @Override
     public boolean addAll(Collection<? extends Byte> c) {
+        // Додаємо всі елементи з колекції c в кінець списку
         boolean modified = false;
         for (Byte e : c) {
             if (add(e)) {
-                modified = true;
+                modified = true; // Список був змінений
             }
         }
         return modified;
     }
 
-
     @Override
     public boolean addAll(int index, Collection<? extends Byte> c) {
+        // Перевірка коректності індексу
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
+        // Додаємо всі елементи починаючи з позиції index
         boolean modified = false;
         for (Byte e : c) {
-            add(index++, e);
+            add(index++, e); // Після кожного додавання зсуваємо індекс
             modified = true;
         }
         return modified;
     }
 
-
     @Override
     public boolean removeAll(Collection<?> c) {
+        // Видаляємо всі елементи списку, які містяться в колекції c
         boolean modified = false;
         Node current = head;
         while (current != null) {
-            Node next = current.next;
+            Node next = current.next; // Зберігаємо посилання на наступний вузол
             if (c.contains(current.data)) {
-                removeNode(current);
+                removeNode(current); // Видаляємо вузол
                 modified = true;
             }
             current = next;
@@ -542,15 +542,15 @@ public class NumberListImpl implements NumberList {
         return modified;
     }
 
-
     @Override
     public boolean retainAll(Collection<?> c) {
+        // Залишаємо лише ті елементи, які є в колекції c
         boolean modified = false;
         Node current = head;
         while (current != null) {
             Node next = current.next;
             if (!c.contains(current.data)) {
-                removeNode(current);
+                removeNode(current); // Видаляємо елемент, якого немає в c
                 modified = true;
             }
             current = next;
@@ -558,59 +558,63 @@ public class NumberListImpl implements NumberList {
         return modified;
     }
 
-
     @Override
     public void clear() {
+        // Очищаємо список
         head = null;
         tail = null;
         size = 0;
     }
 
-
     @Override
     public Byte get(int index) {
+        // Повертаємо значення елемента за індексом
         return getNode(index).data;
     }
 
-
     @Override
     public Byte set(int index, Byte element) {
+        // Перевірка на null
         if (element == null) {
             throw new NullPointerException("Null elements not permitted");
         }
+        // Перевірка, що цифра входить у допустимий діапазон
         if (element < 0 || element >= base) {
             throw new IllegalArgumentException("Digit must be between 0 and " + (base - 1));
         }
+        // Замінюємо значення елемента
         Node node = getNode(index);
         Byte oldValue = node.data;
         node.data = element;
-        return oldValue;
+        return oldValue; // Повертаємо старе значення
     }
-
 
     @Override
     public void add(int index, Byte element) {
+        // Перевірка на null
         if (element == null) {
             throw new NullPointerException("Null elements not permitted");
         }
+        // Перевірка діапазону значення
         if (element < 0 || element >= base) {
             throw new IllegalArgumentException("Digit must be between 0 and " + (base - 1));
         }
+        // Додаємо елемент у задану позицію
         addDigit(index, element);
     }
 
-
     @Override
     public Byte remove(int index) {
+        // Видаляємо елемент за індексом
         Node node = getNode(index);
         Byte oldValue = node.data;
         removeNode(node);
-        return oldValue;
+        return oldValue; // Повертаємо видалене значення
     }
-
 
     @Override
     public int indexOf(Object o) {
+        // Пошук першого входження елемента
         if (!(o instanceof Byte)) {
             return -1;
         }
@@ -623,12 +627,12 @@ public class NumberListImpl implements NumberList {
             current = current.next;
             index++;
         }
-        return -1;
+        return -1; // Не знайдено
     }
-
 
     @Override
     public int lastIndexOf(Object o) {
+        // Пошук останнього входження елемента
         if (!(o instanceof Byte)) {
             return -1;
         }
@@ -641,8 +645,9 @@ public class NumberListImpl implements NumberList {
             current = current.prev;
             index--;
         }
-        return -1;
+        return -1; // Не знайдено
     }
+
 
     // Допоміжний метод для отримання вузла за індексом
     private Node getNode(int index) {
@@ -669,13 +674,14 @@ public class NumberListImpl implements NumberList {
 
     @Override
     public ListIterator<Byte> listIterator() {
+        // Повертаємо ітератор, починаючи з нульового індексу
         return listIterator(0);
     }
 
 
     @Override
     public ListIterator<Byte> listIterator(int index) {
-        if (index < 0 || index > size) {
+        if (index < 0 || index > size) { // Перевірка коректності початкового індексу
             throw new IndexOutOfBoundsException("Index: " + index);
         }
         return new ListIterator<Byte>() {
@@ -792,7 +798,7 @@ public class NumberListImpl implements NumberList {
             return;
         }
 
-        // bubble
+        // bubble sort
         boolean swapped;
         do {
             swapped = false;
