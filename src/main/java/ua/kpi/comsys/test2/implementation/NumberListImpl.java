@@ -93,7 +93,7 @@ public class NumberListImpl implements NumberList {
      * Constructs new <tt>NumberListImpl</tt> by <b>decimal</b> number
      * in string notation.
      *
-     * @param value - number in string notation.
+     * @param value 
      */
     public NumberListImpl(String value) {
         this();
@@ -290,46 +290,57 @@ public class NumberListImpl implements NumberList {
     }
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || !(o instanceof NumberList)) return false;
+@Override
+public boolean equals(Object o) {
+    // Перевірка на посилання на той самий об’єкт
+    if (this == o) return true;
 
-        NumberList other = (NumberList) o;
-        if (this.size() != other.size()) return false;
+    // Перевірка на null та відповідність типу
+    if (o == null || !(o instanceof NumberList)) return false;
 
-        Iterator<Byte> thisIter = this.iterator();
-        Iterator<Byte> otherIter = other.iterator();
+    // Приведення типу
+    NumberList other = (NumberList) o;
 
-        while (thisIter.hasNext() && otherIter.hasNext()) {
-            Byte thisByte = thisIter.next();
-            Byte otherByte = otherIter.next();
-            if (!thisByte.equals(otherByte)) {
-                return false;
-            }
+    // Якщо розміри різні — списки не рівні
+    if (this.size() != other.size()) return false;
+
+    // Отримуємо ітератори для обох списків
+    Iterator<Byte> thisIter = this.iterator();
+    Iterator<Byte> otherIter = other.iterator();
+
+    // Почергово порівнюємо всі елементи
+    while (thisIter.hasNext() && otherIter.hasNext()) {
+        Byte thisByte = thisIter.next();
+        Byte otherByte = otherIter.next();
+        if (!thisByte.equals(otherByte)) {
+            return false;
         }
-
-        return true;
     }
 
+    // Всі елементи однакові
+    return true;
+}
 
     @Override
     public int size() {
+        // Повертає кількість елементів у списку
         return size;
     }
 
-
     @Override
     public boolean isEmpty() {
+        // Перевіряє, чи список порожній
         return size == 0;
     }
 
-
     @Override
     public boolean contains(Object o) {
+        // Перевірка типу елемента
         if (!(o instanceof Byte)) {
             return false;
         }
+
+        // Послідовний пошук елемента в списку
         Node current = head;
         while (current != null) {
             if (current.data.equals(o)) {
@@ -337,22 +348,24 @@ public class NumberListImpl implements NumberList {
             }
             current = current.next;
         }
-        return false;
+        return false; // Елемент не знайдено
     }
-
 
     @Override
     public Iterator<Byte> iterator() {
+        // Повертає ітератор для проходу по списку
         return new Iterator<Byte>() {
             private Node current = head;
 
             @Override
             public boolean hasNext() {
+                // Перевіряє наявність наступного елемента
                 return current != null;
             }
 
             @Override
             public Byte next() {
+                // Повертає наступний елемент
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
@@ -368,12 +381,13 @@ public class NumberListImpl implements NumberList {
         };
     }
 
-
     @Override
     public Object[] toArray() {
+        // Перетворює список у масив Object
         Object[] array = new Object[size];
         int index = 0;
         Node current = head;
+
         while (current != null) {
             array[index++] = current.data;
             current = current.next;
@@ -685,17 +699,20 @@ public class NumberListImpl implements NumberList {
             throw new IndexOutOfBoundsException("Index: " + index);
         }
         return new ListIterator<Byte>() {
+             // Поточний вузол ітератора
             private Node current = (index == size) ? null : getNode(index);
             private Node lastReturned = null;
             private int currentIndex = index;
 
             @Override
             public boolean hasNext() {
+                  // Перевіряє, чи є наступний елемент
                 return currentIndex < size;
             }
 
             @Override
             public Byte next() {
+                // Повертає наступний елемент списку
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
@@ -708,11 +725,13 @@ public class NumberListImpl implements NumberList {
 
             @Override
             public boolean hasPrevious() {
+                // Перевіряє, чи є попередній елемент
                 return currentIndex > 0;
             }
 
             @Override
             public Byte previous() {
+                 // Повертає попередній елемент списку
                 if (!hasPrevious()) {
                     throw new NoSuchElementException();
                 }
@@ -724,21 +743,25 @@ public class NumberListImpl implements NumberList {
 
             @Override
             public int nextIndex() {
+                  // Повертає індекс наступного елемента
                 return currentIndex;
             }
 
             @Override
             public int previousIndex() {
+                  // Повертає індекс попереднього елемента
                 return currentIndex - 1;
             }
 
             @Override
             public void remove() {
+                 // Видалення через ітератор не підтримується
                 throw new UnsupportedOperationException();
             }
 
             @Override
             public void set(Byte e) {
+                // Замінює значення останнього повернутого елемента
                 if (lastReturned == null) {
                     throw new IllegalStateException();
                 }
@@ -765,7 +788,7 @@ public class NumberListImpl implements NumberList {
         }
         Node current = getNode(fromIndex);
         for (int i = fromIndex; i < toIndex; i++) {
-            sublist.addDigit(current.data); // використовуємо addDigit
+            sublist.addDigit(current.data); 
             current = current.next;
         }
         return sublist;
@@ -774,16 +797,18 @@ public class NumberListImpl implements NumberList {
 
     @Override
     public boolean swap(int index1, int index2) {
+         // Перевірка коректності індексів
         if (index1 < 0 || index1 >= size || index2 < 0 || index2 >= size) {
             return false;
         }
+        // Якщо індекси однакові — обмін не потрібен
         if (index1 == index2) {
             return true;
         }
-
+        // Отримуємо вузли за вказаними індексами
         Node node1 = getNode(index1);
         Node node2 = getNode(index2);
-
+        // Міняємо місцями значення у вузлах
         Byte temp = node1.data;
         node1.data = node2.data;
         node2.data = temp;
