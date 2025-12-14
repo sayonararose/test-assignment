@@ -84,7 +84,9 @@ public class NumberListImpl implements NumberList {
                 parseDecimalString(line.trim());
             }
         } catch (IOException e) {
-            throw new RuntimeException("Помилка читання файлу", e);
+            // Якщо файл не існує або є помилка читання, залишаємо список порожнім
+        } catch (IllegalArgumentException e) {
+            // Якщо дані у файлі некоректні, залишаємо список порожнім
         }
     }
 
@@ -98,7 +100,11 @@ public class NumberListImpl implements NumberList {
     public NumberListImpl(String value) {
         this();
         if (value != null && !value.trim().isEmpty()) {
-            parseDecimalString(value.trim());
+            try {
+                parseDecimalString(value.trim());
+            } catch (IllegalArgumentException e) {
+                // Якщо рядок містить некоректні символи, залишаємо список порожнім
+            }
         }
     }
 
@@ -199,24 +205,20 @@ public class NumberListImpl implements NumberList {
      * @return result of additional operation.
      */
     public NumberListImpl additionalOperation(NumberList arg) {
-        // Операція: залишок від ділення двох чисел (this % arg)
+        // Операція: множення двох чисел (this * arg)
         if (arg == null || arg.isEmpty()) {
-            throw new IllegalArgumentException("Дільник не може бути порожнім");
+            throw new IllegalArgumentException("Аргумент не може бути порожнім");
         }
 
-        String dividend = this.toDecimalString();
-        String divisor = convertToDecimalString(arg);
+        String multiplicand = this.toDecimalString();
+        String multiplier = convertToDecimalString(arg);
 
-        if (divisor.equals("0")) {
-            throw new ArithmeticException("Ділення на нуль");
-        }
+        // Використовуємо BigInteger для множення
+        java.math.BigInteger a = new java.math.BigInteger(multiplicand);
+        java.math.BigInteger b = new java.math.BigInteger(multiplier);
+        java.math.BigInteger product = a.multiply(b);
 
-        // Використовуємо BigInteger для обчислення залишку
-        java.math.BigInteger a = new java.math.BigInteger(dividend);
-        java.math.BigInteger b = new java.math.BigInteger(divisor);
-        java.math.BigInteger remainder = a.mod(b);
-
-        return new NumberListImpl(remainder.toString());
+        return new NumberListImpl(product.toString());
     }
 
     // Допоміжний метод для конвертації NumberList в десятковий рядок
@@ -242,13 +244,30 @@ public class NumberListImpl implements NumberList {
         if (isEmpty()) {
             return "0";
         }
-        StringBuilder sb = new StringBuilder();
+
+        // Якщо список вже в десятковій системі, просто повертаємо як є
+        if (base == 10) {
+            StringBuilder sb = new StringBuilder();
+            Node current = head;
+            while (current != null) {
+                sb.append(current.data);
+                current = current.next;
+            }
+            return sb.toString();
+        }
+
+        // Інакше конвертуємо з поточної системи числення в десяткову
+        java.math.BigInteger result = java.math.BigInteger.ZERO;
+        java.math.BigInteger baseValue = java.math.BigInteger.valueOf(base);
+
         Node current = head;
         while (current != null) {
-            sb.append(current.data);
+            result = result.multiply(baseValue);
+            result = result.add(java.math.BigInteger.valueOf(current.data));
             current = current.next;
         }
-        return sb.toString();
+
+        return result.toString();
     }
 
 
